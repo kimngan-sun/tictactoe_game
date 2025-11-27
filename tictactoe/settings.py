@@ -19,11 +19,10 @@ if ENVIRONMENT == 'development':
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1','*']
+ALLOWED_HOSTS = ['localhost','127.0.0.1','https://tictactoe-game-tls9.onrender.com']
 
 
 # Application definition
-
 INSTALLED_APPS = [
     "daphne",
     'django.contrib.admin',
