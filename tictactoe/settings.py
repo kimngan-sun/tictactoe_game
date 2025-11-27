@@ -19,7 +19,14 @@ if ENVIRONMENT == 'development':
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1','https://tictactoe-game-tls9.onrender.com']
+ALLOWED_HOSTS = ['localhost','127.0.0.1','tictactoe-game-tls9.onrender.com']
+
+CSRF_TRUSTED_ORIGINS = ['https://tictactoe-game-tls9.onrender.com']
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+    'localhost:8000'
+]
 
 
 # Application definition
