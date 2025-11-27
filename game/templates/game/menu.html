@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe - Menu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .game-option {
+            transition: all 0.3s ease;
+        }
+
+        .game-option:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-gray-800 text-white">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <!-- Left section: Logo + links -->
+            <div class="flex items-center space-x-6">
+                <!-- Logo -->
+                <a href="/" class="text-2xl font-bold">TicTacToe</a>
+
+                <!-- Menu items (desktop) -->
+                <div class="hidden md:flex space-x-4">
+                    <a href="{% url 'profile' user.username %}" class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded transition-colors">
+                        Thông tin cá nhân
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right section: Auth buttons -->
+            <div class="hidden md:flex space-x-4 items-center">
+                {% if user.is_authenticated %}
+                    <span>{{ user.username }}</span>
+                    <a href="{% url 'logout' %}" class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Đăng xuất</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Đăng nhập</a>
+                    <a href="{% url 'register' %}" class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Đăng ký</a>
+                {% endif %}
+            </div>
+
+            <!-- Mobile menu button -->
+            <button id="menu-btn" class="md:hidden text-white focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"
+                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile menu -->
+        <div id="menu" class="md:hidden hidden px-4 pb-4 space-y-2">
+            <a href="{% url 'profile' user.username %}" class="block bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded transition-colors">
+                Thông tin cá nhân
+            </a>
+            {% if user.is_authenticated %}
+                <span class="block">{{ user.username }}</span>
+                <a href="{% url 'logout' %}" class="block bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Đăng xuất</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="block bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Đăng nhập</a>
+                <a href="{% url 'register' %}" class="block bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Đăng ký</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Menu Content -->
+    <div class="container mx-auto px-4 py-8 flex-1 flex flex-col items-center justify-center">
+        <h1 class="text-5xl font-bold text-center mb-12 text-gray-800">Chào mừng đến với Tic Tac Toe!</h1>
+
+        <div class="max-w-2xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Người chơi vs Người chơi -->
+            <a href="{% url 'game_page' 0 %}" class="game-option bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl">
+                <div class="text-4xl mb-4">🎮</div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Người chơi vs Người chơi</h2>
+                <p class="text-gray-600">Trò chơi cổ điển giữa hai người</p>
+                <div class="mt-4 text-sm text-gray-500">
+                    • Chơi với bạn bè<br>
+                    • Không AI
+                </div>
+            </a>
+
+            <!-- 3x3 Tictactoe -->
+            <a href="{% url 'game_page' 3 %}" class="game-option bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl">
+                <div class="text-4xl mb-4">🎮</div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">3x3 Tictactoe</h2>
+                <p class="text-gray-600">Chơi với máy tính, nhiều mức độ khó</p>
+                <div class="mt-4 text-sm text-gray-500">
+                    • Chơi với AI<br>
+                    • Dễ: Thích hợp người mới<br>
+                    • Trung bình: Thử thách vừa phải<br>
+                    • Khó: Cho người chơi chuyên nghiệp
+                </div>
+            </a>
+
+            <!-- 9x9 Tictactoe -->
+            <a href="{% url 'game_page' 9 %}" class="game-option bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl">
+                <div class="text-4xl mb-4">🎲</div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">9x9 Tictactoe</h2>
+                <p class="text-gray-600">Chơi năm chấm liền trên bàn cờ lớn</p>
+                <div class="mt-4 text-sm text-gray-500">
+                    • Chơi với AI<br>
+                    • Chiến lược sâu<br>
+                    • Thử thách cao<br>
+                    • Gameplay nâng cao
+                </div>
+            </a>
+
+            <!-- Tạo phòng chơi -->
+            <a href="{% url 'create_room' %}"
+                class="game-option bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl">
+                <div class="text-4xl mb-4">🕹️</div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Tạo phòng chơi</h2>
+                <p class="text-gray-600">Tạo phòng và mời bạn bè cùng chơi</p>
+                <div class="mt-4 text-sm text-gray-500">
+                    • Hãy tạo phòng<br>
+                    • Rủ bạn cũng chơi<br>
+                    • Realtime
+                </div>
+            </a>
+        </div>
+
+        <div class="text-center mt-12">
+            <p class="text-gray-600">Chọn chế độ chơi để bắt đầu!</p>
+        </div>
+    </div>
+
+    <!-- Script toggle menu mobile -->
+    <script>
+        const btn = document.getElementById('menu-btn');
+        const menu = document.getElementById('menu');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+
+</html>

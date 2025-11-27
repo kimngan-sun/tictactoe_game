@@ -1,0 +1,219 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>15x15 Gomoku</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .cell {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 0.75rem;
+            border: 2px solid #e5e7eb;
+            background: #f3f4f6;
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+        }
+
+        .cell:hover {
+            background: #e0e7ff;
+            box-shadow: 0 4px 14px 0 rgb(99 102 241 / 0.15);
+            cursor: pointer;
+            border-color: #6366f1;
+        }
+
+        .cell:active {
+            background: #c7d2fe;
+        }
+
+        .cell.text-blue-500,
+        .cell.text-red-500 {
+            background: #fff;
+            border-color: #6366f1;
+        }
+
+        #board {
+            background: linear-gradient(135deg, #f3f4f6 60%, #6366f1 100%);
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px 0 rgb(99 102 241 / 0.10);
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: repeat(15, 3rem);
+            grid-template-rows: repeat(15, 3rem);
+            gap: 0.5rem;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .player-X {
+            color: #3b82f6;
+            /* Blue 500 */
+        }
+
+        .player-O {
+            color: #ef4444;
+            /* Red 500 */
+        }
+
+        .difficulty-btn {
+            transition: all 0.2s ease;
+        }
+
+        .difficulty-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .difficulty-btn.active {
+            background-color: #4F46E5;
+            color: white;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center">
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-8">
+            <a href="{% url 'menu' %}"
+                class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+                ← Back to Menu
+            </a>
+            <h1 class="text-4xl font-bold text-gray-800">15x15 Gomoku</h1>
+            <div class="w-24"></div> <!-- Spacer for alignment -->
+        </div>
+
+        <!-- Difficulty Selection -->
+        <div class="flex justify-center gap-4 mb-8">
+            <button onclick="setDifficulty('easy')"
+                class="difficulty-btn px-6 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold">
+                Easy
+            </button>
+            <button onclick="setDifficulty('medium')"
+                class="difficulty-btn px-6 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold active">
+                Medium
+            </button>
+            <button onclick="setDifficulty('hard')"
+                class="difficulty-btn px-6 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold">
+                Hard
+            </button>
+        </div>
+
+        <!-- Game Board -->
+        <div id="board"></div>
+
+        <!-- Game Status -->
+        <div class="text-center mt-8">
+            <p id="status" class="text-xl font-semibold text-gray-700"></p>
+            <button onclick="newGame()"
+                class="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition-colors">
+                New Game
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Hàm lấy CSRF token từ cookie
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+
+        let currentDifficulty = 'medium';
+        let gameOver = false;
+        const boardSize = 15;
+
+        function setDifficulty(difficulty) {
+            currentDifficulty = difficulty;
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            newGame();
+        }
+
+        function newGame() {
+            fetch("{% url 'new_game' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({ difficulty: currentDifficulty, size: boardSize })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    updateBoard(data.board);
+                    gameOver = false;
+                    document.getElementById('status').textContent = "Your turn (X)";
+                });
+        }
+
+        function makeMove(row, col) {
+            if (gameOver) return;
+
+            fetch("{% url 'make_move' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({ row, col, size: boardSize })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        return;
+                    }
+
+                    updateBoard(data.board);
+
+                    if (data.winner) {
+                        document.getElementById('status').textContent =
+                            data.winner === 'X' ? "You won!" : "AI won!";
+                        gameOver = true;
+                    } else if (data.tie) {
+                        document.getElementById('status').textContent = "It's a tie!";
+                        gameOver = true;
+                    } else if (data.game_over) {
+                        document.getElementById('status').textContent = "Game Over!";
+                        gameOver = true;
+                    } else {
+                        document.getElementById('status').textContent = "Your turn (X)";
+                    }
+                });
+        }
+
+        function updateBoard(board) {
+            const boardDiv = document.getElementById('board');
+            boardDiv.innerHTML = '';
+            for (let i = 0; i < boardSize; i++) {
+                for (let j = 0; j < boardSize; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell w-12 h-12 flex items-center justify-center text-2xl font-bold cursor-pointer';
+                    cell.textContent = board[i][j];
+                    if (board[i][j] === 'X') cell.classList.add('player-X');
+                    if (board[i][j] === 'O') cell.classList.add('player-O');
+                    cell.onclick = function () { makeMove(i, j); };
+                    boardDiv.appendChild(cell);
+                }
+            }
+        }
+
+        // Start a new game when the page loads
+        newGame();
+    </script>
+</body>
+
+</html>

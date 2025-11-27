@@ -1,0 +1,105 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo phòng chơi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex flex-col items-center">
+
+    <!-- Navbar -->
+    <nav class="bg-gray-800 text-white w-full">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="{% url 'menu' %}" class="text-2xl font-bold">TicTacToe</a>
+
+            <div class="hidden md:flex space-x-4 items-center">
+                <a href="{% url 'menu' %}" class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded transition-colors">Trang chủ</a>
+                {% if user.is_authenticated %}
+                    <span>{{ user.username }}</span>
+                    <a href="{% url 'logout' %}" class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded transition-colors">Đăng xuất</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded transition-colors">Đăng nhập</a>
+                    <a href="{% url 'register' %}" class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded transition-colors">Đăng ký</a>
+                {% endif %}
+            </div>
+
+            <!-- Mobile menu button -->
+            <button id="menu-btn" class="md:hidden text-white focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"
+                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Container chính -->
+    <div class="container mx-auto px-4 py-8 flex-1 w-full flex items-center justify-center">
+        <div class="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
+            <!-- Header -->
+            <h1 class="text-3xl font-extrabold text-center text-gray-800 mb-6">Tạo phòng chơi</h1>
+
+            <!-- Messages -->
+            <!-- {% if messages %}
+                <div class="mb-4">
+                    {% for message in messages %}
+                        <p class="text-center font-medium
+                            {% if message.tags %}
+                                {% if message.tags == 'error' %}text-red-500{% else %}text-green-500{% endif %}
+                            {% endif %}">
+                            {{ message }}
+                        </p>
+                    {% endfor %}
+                </div>
+            {% endif %} -->
+
+            <!-- Form -->
+            <form action="{% url 'create_room' %}" method="post" class="flex flex-col gap-4">
+                {% csrf_token %}
+                <input type="number" name="room-id" placeholder="Nhập số phòng (nếu đã có)"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
+
+                <input type="text" name="player_name" placeholder="Tên của bạn (mặc định là username nếu trống)"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
+
+                <button id="actionBtn" type="submit"
+                    class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-xl shadow-lg transition transform active:scale-95">
+                    Tạo phòng
+                </button>
+            </form>
+
+            <p class="text-sm text-gray-500 text-center mt-4">
+                Nếu bạn nhập số phòng, bạn sẽ tham gia phòng đó.
+            </p>
+        </div>
+    </div>
+
+    <!-- Script -->
+    <script>
+        // Đổi nút Tạo / Tham gia
+        const roomInput = document.querySelector("input[name='room-id']");
+        const actionBtn = document.querySelector("button[type='submit']");
+
+        roomInput.addEventListener('input', e => {
+            if (e.target.value.trim() === "") {
+                actionBtn.innerText = "Tạo phòng";
+            } else {
+                actionBtn.innerText = "Tham gia phòng";
+            }
+        });
+
+        // Mobile menu toggle
+        const menuBtn = document.getElementById('menu-btn');
+        const navItems = document.querySelector('nav .md\\:flex');
+
+        menuBtn.addEventListener('click', () => {
+            navItems.classList.toggle('hidden');
+        });
+    </script>
+
+</body>
+</html>

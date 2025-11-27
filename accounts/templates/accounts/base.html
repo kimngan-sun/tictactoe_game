@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Tic Tac Toe{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    {% load static %}
+</head>
+
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-gray-800 text-white">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <!-- Logo -->
+            <a href="/" class="text-2xl font-bold">TicTacToe</a>
+
+            <!-- Menu button (mobile) -->
+            <button id="menu-btn" class="md:hidden text-white focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"
+                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+
+            <!-- Menu items -->
+            <div id="menu" class="hidden md:flex space-x-4 items-center">
+                {% if user.is_authenticated %}
+                    <span>{{ user.username }}</span>
+                    <a href="{% url 'logout' %}"
+                        class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded transition-colors">Đăng xuất</a>
+                {% else %}
+                    <a href="{% url 'login' %}"
+                        class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded transition-colors">Đăng nhập</a>
+                    <a href="{% url 'register' %}"
+                        class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded transition-colors">Đăng ký</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Container -->
+    <div class="container mx-auto px-4 flex-1">
+
+        <!-- Messages -->
+        {% for message in messages %}
+            <div class="mb-4 px-4 py-3 rounded shadow text-white 
+                {% if message.tags == 'success' %}bg-green-500
+                {% elif message.tags == 'error' %}bg-red-500
+                {% elif message.tags == 'warning' %}bg-yellow-500
+                {% else %}bg-blue-500
+                {% endif %} 
+                flex justify-between items-center">
+                <span>{{ message }}</span>
+                <button onclick="this.parentElement.remove()"
+                    class="text-white font-bold px-2 py-1 focus:outline-none">&times;</button>
+            </div>
+        {% endfor %}
+
+        <!-- Main content -->
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Mobile menu toggle script -->
+    <script>
+        const btn = document.getElementById('menu-btn');
+        const menu = document.getElementById('menu');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+    </script>
+
+</body>
+
+</html>

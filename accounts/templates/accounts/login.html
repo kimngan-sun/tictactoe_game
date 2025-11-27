@@ -1,0 +1,60 @@
+{% extends "accounts/base.html" %}
+{% load static %}
+
+{% block title %}Đăng nhập{% endblock %}
+
+{% block content %}
+<div class="flex justify-center mt-10 px-4">
+    <div class="w-full max-w-md bg-white p-8 rounded-xl shadow-lg">
+
+        <h3 class="text-2xl font-bold text-center mb-6 text-gray-800">Đăng nhập</h3>
+
+        <!-- Form login -->
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+
+            <!-- Username -->
+            <div>
+                <label class="block text-gray-700 mb-1">Username</label>
+                <input type="text" name="username" value="{{ form.username.value|default:'' }}"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                {% if form.username.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.username.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Password -->
+            <div>
+                <label class="block text-gray-700 mb-1">Password</label>
+                <input type="password" name="password" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                {% if form.password.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.password.errors.0 }}</p>
+                {% endif %}
+            </div>
+            <div class="mt-4">
+                {{ form.captcha }}
+                {% if form.captcha.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.captcha.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Submit -->
+            <button type="submit"
+                class="w-full bg-gray-800 text-white py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                Đăng nhập
+            </button>
+        </form>
+
+        <div class="mt-6 border-t pt-4 text-center text-sm text-gray-500 space-y-1">
+            <div>
+                Chưa có tài khoản? 
+                <a href="{% url 'register' %}" class="text-blue-600 hover:underline">Đăng ký ngay</a>
+            </div>
+            <div>
+                <a href="{% url 'password_reset' %}" class="text-blue-600 hover:underline">Quên mật khẩu?</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

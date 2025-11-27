@@ -1,0 +1,11 @@
+{% autoescape off %}
+Xin chào {{ user.username }},
+
+Cảm ơn bạn đã đăng ký tài khoản! Vui lòng nhấn liên kết bên dưới để kích hoạt tài khoản của bạn:
+
+{{ protocol }}://{{ domain }}{% url 'activate' uidb64=uid token=token %}
+
+Nếu liên kết trên không hoạt động, bạn có thể sao chép và dán vào trình duyệt.
+
+Nếu bạn không đăng ký tài khoản này, vui lòng bỏ qua email này.
+{% endautoescape %}
