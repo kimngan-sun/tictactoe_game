@@ -17,7 +17,7 @@ SECRET_KEY = env('SECRET_KEY')
 if ENVIRONMENT == 'development':
     DEBUG = True
 else:
-    DEBUG = False
+    DEBUG = True
 
 ALLOWED_HOSTS = ['localhost','127.0.0.1','tictactoe-game-tls9.onrender.com']
 
@@ -159,21 +159,23 @@ DEFAULT_FROM_EMAIL = "sunnyman2411@gmail.com"
 SITE_ID = 1
 
 #channel-redis
+REDIS_URL = env('REDIS_URL')
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": ['redis://default:jLphbMAHyLvZlhBM8jNuWSGLUvtBHS5D@redis-17501.c85.us-east-1-2.ec2.cloud.redislabs.com:17501/0'],
-            "prefix": "channels:",
+            "hosts": [REDIS_URL],
         },
     }
 }
 
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': 'redis://default:jLphbMAHyLvZlhBM8jNuWSGLUvtBHS5D@redis-17501.c85.us-east-1-2.ec2.cloud.redislabs.com:17501/0',
-        'KEY_PREFIX': 'cache:', 
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_URL,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
     }
 }
 
