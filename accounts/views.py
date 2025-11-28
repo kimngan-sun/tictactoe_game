@@ -26,7 +26,7 @@ def sendgrid_email(to_email, subject, html_content):
     """
     message = Mail(
         from_email=settings.DEFAULT_FROM_EMAIL,
-        to_emails=to_email,   # dùng 'to_emails' cho SendGrid >=6.x
+        to_email=to_email,   # dùng 'to_emails' cho SendGrid >=6.x
         subject=subject,
         html_content=html_content
     )
@@ -194,7 +194,7 @@ def password_reset_request(request):
                     messages.error(request,'Gặp sự cố khi gửi email, vui lòng thử lại sau.')
     else:
         form = PasswordResetForm()
-    return render(request, 'accounts/password_reset.html', {'form':form})
+    return render(request, 'password_reset.html', {'form':form})
 
 def passwordResetConfirm(request, uidb64, token):
     User = get_user_model()
