@@ -20,18 +20,16 @@ from django.conf import settings
 # Create your views here.
 
 def sendgrid_email(to_email, subject, html_content):
-    """
-    Gửi email bằng SendGrid Web API.
-    Trả về True nếu gửi thành công, False nếu lỗi.
-    """
     message = Mail(
         from_email=settings.DEFAULT_FROM_EMAIL,
-        to_email=to_email,   # dùng 'to_emails' cho SendGrid >=6.x
+        to_emails=to_email,   # dùng 'to_emails' cho SendGrid >=6.x
         subject=subject,
         html_content=html_content
     )
     try:
         sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
+        print("SENDGRID_API_KEY:", settings.SENDGRID_API_KEY)
+        print("To Email:", to_email)
         response = sg.send(message)
         if response.status_code in [200, 202]:
             return True
