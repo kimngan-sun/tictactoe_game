@@ -138,7 +138,7 @@ LOGIN_URL = 'login'
 RECAPTCHA_PUBLIC_KEY = '6LcnZxosAAAAAKgP2gN5oybFv17bVwp6oPIZvqTj'
 RECAPTCHA_PRIVATE_KEY = '6LcnZxosAAAAACS83dyIDDLpxJE37e2FiBL4qVrX'
 
-#backend email
+#backend 
 AUTHENTICATION_BACKENDS = ['accounts.backends.EmailBackend']
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
@@ -146,15 +146,16 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 ##EMAIL SETTINGS
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_FROM = env('EMAIL_ADDRESS')
-EMAIL_HOST_USER = env('EMAIL_ADDRESS')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = f'TicTacToe {env('EMAIL_ADDRESS')}'
-ACCOUNT_EMAIL_SUBJECT_PREFIX = ''
+EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
+SENDGRID_API_KEY = env('SENDGRID_API_KEY')
+
+# Optional 
+SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+SENDGRID_ECHO_TO_STDOUT = False
+
+DEFAULT_FROM_EMAIL = "TicTacToe <no-reply@sunnyman2411@gmail.com>"
+
+
 SITE_ID = 1
 
 #channel-redis

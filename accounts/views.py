@@ -13,9 +13,31 @@ from django.utils.encoding import force_bytes, force_str
 from django.core.mail import EmailMessage
 from .tokens import account_activation_token
 from django.db.models.query_utils import Q
-
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+from django.conf import settings
 
 # Create your views here.
+
+def sendgrid_email(to_email, subject, html_content):
+    """
+    Gửi email bằng SendGrid
+    trả về True nếu gửi thành công, False nếu lỗi
+    """
+    message = Mail(
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to_emails=to_email,
+        subject=subject,
+        html_content=html_content
+    )
+    try:
+        sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
+        response = sg.send(message)
+        return response.status_code in [200, 202]
+    except Exception as e:
+        print("SendGrid Error:", e)
+        return False
+    
 def activate(request, uidb64, token):
     User = get_user_model()
     try:
@@ -41,11 +63,11 @@ def activateEmail(request, user, to_email):
         'token': account_activation_token.make_token(user),
         'protocol' : 'https' if request.is_secure() else 'http'
     })
-    email = EmailMessage(email_subject, message, to = [to_email])
-    if email.send():
-        messages.success(request,f'Gửi <b>{user}</b>, hãy đi tới email của bạn <b>{to_email}</b> và nhấp vào link kích hoạt để xác nhận và xác thực đăng ký.')
+
+    if sendgrid_email(to_email, email_subject, message):
+        messages.success(request,f'Gửi <b>{user}</b>, hãy kiểm tra email <b>{to_email}</b> để kích hoạt.')
     else:
-        message.error(request, f'Không thể gửi email đến {to_email}')
+        messages.error(request, f'Không thể gửi email đến {to_email}')
 
 @user_not_authenticated
 def register(request):
@@ -155,11 +177,11 @@ def password_reset_request(request):
                     'user': associated_user,
                     'domain': get_current_site(request).domain,
                     'uid': urlsafe_base64_encode(force_bytes(associated_user.pk)),
-                    'token': account_activation_token.make_token(associated_user ),
+                    'token': account_activation_token.make_token(associated_user),
                     'protocol' : 'https' if request.is_secure() else 'http'
                 })
-                email = EmailMessage(subject, message, to=[associated_user.email])
-                if email.send():
+
+                if sendgrid_email(associated_user.email, subject, message):
                     messages.success(request,
                     """
                     <h2>Đã gửi yêu cầu đặt lại mật khẩu</h2><hr>
@@ -167,20 +189,19 @@ def password_reset_request(request):
                         Chúng tôi đã gửi hướng dẫn đặt lại mật khẩu đến email của bạn, 
                         nếu hệ thống tìm thấy tài khoản khớp với địa chỉ email đã nhập. 
                         Bạn sẽ nhận được email trong giây lát.<br>
-                        Nếu bạn không nhận được email, hãy đảm bảo rằng bạn đã nhập đúng địa chỉ 
-                        email đã dùng để đăng ký, và kiểm tra thư mục spam.
+                        Nếu bạn không nhận được email, hãy kiểm tra thư mục spam.
                     </p>
                     """
                     )
                 else:
-                    message.error(request,'Gặp sự cố khi gửi email đặt lại mật khẩu, <b>LỖI MÁY CHỦ</b>')
+                    messages.error(request,'Gặp sự cố khi gửi email đặt lại mật khẩu, <b>LỖI MÁY CHỦ</b>')
         else:
             for key, error in list(form.errors.items()):
                 if key == 'captcha' and error[0] == 'Trường này là yêu cầu bắt buộc':
                     messages.error(request, 'Bạn phải xác nhận ReCaptcha')
                     continue
     form = PasswordResetForm()
-    return render(request, 'password_reset.html', {'form':form})
+    return render(request, 'accounts/password_reset.html', {'form':form})
 
 def passwordResetConfirm(request, uidb64, token):
     User = get_user_model()
