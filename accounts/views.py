@@ -21,19 +21,23 @@ from django.conf import settings
 
 def sendgrid_email(to_email, subject, html_content):
     """
-    Gửi email bằng SendGrid
-    trả về True nếu gửi thành công, False nếu lỗi
+    Gửi email bằng SendGrid Web API.
+    Trả về True nếu gửi thành công, False nếu lỗi.
     """
     message = Mail(
         from_email=settings.DEFAULT_FROM_EMAIL,
-        to_emails=to_email,
+        to_emails=to_email,   # dùng 'to_emails' cho SendGrid >=6.x
         subject=subject,
         html_content=html_content
     )
     try:
         sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
         response = sg.send(message)
-        return response.status_code in [200, 202]
+        if response.status_code in [200, 202]:
+            return True
+        else:
+            print("SendGrid returned status:", response.status_code)
+            return False
     except Exception as e:
         print("SendGrid Error:", e)
         return False
@@ -55,17 +59,17 @@ def activate(request, uidb64, token):
     return redirect('menu')
 
 def activateEmail(request, user, to_email):
-    email_subject = 'KÍCH HOẠT TÀI KHOẢN'
-    message = render_to_string('template_activate_account.html',{
+    subject = 'KÍCH HOẠT TÀI KHOẢN'
+    html_content = render_to_string('template_activate_account.html', {
         'user': user.username,
         'domain': get_current_site(request).domain,
         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
         'token': account_activation_token.make_token(user),
-        'protocol' : 'https' if request.is_secure() else 'http'
+        'protocol': 'https' if request.is_secure() else 'http'
     })
 
-    if sendgrid_email(to_email, email_subject, message):
-        messages.success(request,f'Gửi <b>{user}</b>, hãy kiểm tra email <b>{to_email}</b> để kích hoạt.')
+    if sendgrid_email(to_email, subject, html_content):
+        messages.success(request, f'Gửi email kích hoạt đến {to_email} thành công.')
     else:
         messages.error(request, f'Không thể gửi email đến {to_email}')
 
@@ -173,34 +177,23 @@ def password_reset_request(request):
             associated_user = get_user_model().objects.filter(Q(email=user_email)).first()
             if associated_user:
                 subject = 'YÊU CẦU ĐẶT LẠI MẬT KHẨU'
-                message = render_to_string('template_reset_password.html',{
+                html_content = render_to_string('template_reset_password.html', {
                     'user': associated_user,
                     'domain': get_current_site(request).domain,
                     'uid': urlsafe_base64_encode(force_bytes(associated_user.pk)),
                     'token': account_activation_token.make_token(associated_user),
-                    'protocol' : 'https' if request.is_secure() else 'http'
+                    'protocol': 'https' if request.is_secure() else 'http'
                 })
 
-                if sendgrid_email(associated_user.email, subject, message):
+                if sendgrid_email(associated_user.email, subject, html_content):
                     messages.success(request,
-                    """
-                    <h2>Đã gửi yêu cầu đặt lại mật khẩu</h2><hr>
-                    <p>
-                        Chúng tôi đã gửi hướng dẫn đặt lại mật khẩu đến email của bạn, 
-                        nếu hệ thống tìm thấy tài khoản khớp với địa chỉ email đã nhập. 
-                        Bạn sẽ nhận được email trong giây lát.<br>
-                        Nếu bạn không nhận được email, hãy kiểm tra thư mục spam.
-                    </p>
-                    """
+                        "Đã gửi hướng dẫn đặt lại mật khẩu đến email của bạn. "
+                        "Nếu không nhận được email, hãy kiểm tra thư mục spam."
                     )
                 else:
-                    messages.error(request,'Gặp sự cố khi gửi email đặt lại mật khẩu, <b>LỖI MÁY CHỦ</b>')
-        else:
-            for key, error in list(form.errors.items()):
-                if key == 'captcha' and error[0] == 'Trường này là yêu cầu bắt buộc':
-                    messages.error(request, 'Bạn phải xác nhận ReCaptcha')
-                    continue
-    form = PasswordResetForm()
+                    messages.error(request,'Gặp sự cố khi gửi email, vui lòng thử lại sau.')
+    else:
+        form = PasswordResetForm()
     return render(request, 'accounts/password_reset.html', {'form':form})
 
 def passwordResetConfirm(request, uidb64, token):

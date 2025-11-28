@@ -153,7 +153,7 @@ SENDGRID_API_KEY = env('SENDGRID_API_KEY')
 SENDGRID_SANDBOX_MODE_IN_DEBUG = False
 SENDGRID_ECHO_TO_STDOUT = False
 
-DEFAULT_FROM_EMAIL = "TicTacToe <no-reply@sunnyman2411@gmail.com>"
+DEFAULT_FROM_EMAIL = "sunnyman2411@gmail.com"
 
 
 SITE_ID = 1
