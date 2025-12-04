@@ -171,7 +171,7 @@ def leaderboard_view(request):
             ),
             games_played=F('wins') + F('losses') + F('draws')
         )
-        .order_by('-score', '-wins')  # ưu tiên điểm, rồi số trận thắng
+        .order_by('-score', '-wins')  
     )
 
     return render(request, "game/leaderboard.html", {"users": users})
