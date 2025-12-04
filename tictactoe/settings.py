@@ -18,9 +18,9 @@ if ENVIRONMENT == 'development':
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1','0.0.0.0','tictactoe-game-tls9.onrender.com']
+ALLOWED_HOSTS = ['localhost','127.0.0.1','0.0.0.0','tictactoe-game-8zy8.onrender.com']
 
-CSRF_TRUSTED_ORIGINS = ['https://tictactoe-game-tls9.onrender.com']
+CSRF_TRUSTED_ORIGINS = ['https://tictactoe-game-8zy8.onrender.com']
 
 INTERNAL_IPS = [
     '127.0.0.1',
@@ -79,18 +79,18 @@ ASGI_APPLICATION = 'tictactoe.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-# if ENVIRONMENT == 'development':
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if ENVIRONMENT == 'development':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
-# else:
-#     import dj_database_url
-#     DATABASES = {
-#         'default' : dj_database_url.parse(env('DATABASE_URL'))
-#     }
+else:
+    import dj_database_url
+    DATABASES = {
+        'default' : dj_database_url.parse(env('DATABASE_URL'))
+    }
 
 
 # Password validation
@@ -134,8 +134,8 @@ LOGIN_REDIRECT_URL = 'menu'
 LOGIN_URL = 'login'
 
 #recaptcha
-RECAPTCHA_PUBLIC_KEY = '6LcXexosAAAAACPaG7qZ3dFaz61nprnCQcnJBf97'
-RECAPTCHA_PRIVATE_KEY = '6LcXexosAAAAAC5YRiuDHSR6kTlq2OSou5smq0lw'
+RECAPTCHA_PUBLIC_KEY = '6Ld6iCEsAAAAACwrMqtE0wAJVSzDkJWefVWrzyYI'
+RECAPTCHA_PRIVATE_KEY = '6Ld6iCEsAAAAACw_Q3IejXzyO-T8IetSJvsGcgXg'
 
 #backend 
 AUTHENTICATION_BACKENDS = ['accounts.backends.EmailBackend']
