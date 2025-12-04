@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Phòng {{room.id}} | Trò chơi Caro 3x3</title>
+    <title>Phòng {{room.code}} | Trò chơi Caro 3x3</title>
 </head>
 
 <body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center font-['Roboto']">
@@ -18,7 +18,7 @@
         <!-- Player / Room Info -->
         <div class="flex flex-wrap justify-between w-full max-w-2xl mb-6">
             <p class="text-gray-800 font-medium">{{name}} (Bạn)</p>
-            <p class="text-gray-800 font-medium">Phòng: {{room.id}}</p>
+            <p class="text-gray-800 font-medium">Phòng: {{ room.code }}</p>
             <p id="opponent-txt" class="text-gray-600">Đang chờ người chơi khác...</p>
         </div>
 
@@ -89,7 +89,7 @@
 
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const host = window.location.host;
-        const wsUrl = protocol + '//' + host + '/ws/game/{{room.id}}/';
+        const wsUrl = protocol + '//' + host + '/ws/game/{{ room.code }}/';
         const ws = new WebSocket(wsUrl);
 
         ws.onopen = () => console.log('WebSocket connected!');

@@ -2,31 +2,27 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import CustomUser
 
-# Register your models here.
+
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
+    list_display = ('username', 'email', 'wins', 'losses', 'draws', 'is_staff')
+    list_filter = ('is_staff', 'is_superuser', 'is_active')
+    search_fields = ('username', 'email')
+    ordering = ('-wins',)  # bảng xếp hạng theo số trận thắng
 
-    # Các field hiển thị khi edit user
-    fieldsets = UserAdmin.fieldsets + (
-        ('Thông tin bổ sung', {'fields': ('description',)}),
+    fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        ('Personal Info', {'fields': ('first_name', 'last_name', 'email', 'description')}),
+        ('Game Stats', {'fields': ('wins', 'losses', 'draws')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
     )
 
-    # Các field hiển thị khi thêm user mới
-    add_fieldsets = UserAdmin.add_fieldsets + (
-        ('Thông tin bổ sung', {'fields': ('description',)}),
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'email', 'password1', 'password2', 'is_staff', 'is_active')}
+        ),
     )
 
-    # Cột hiển thị trong bảng danh sách user
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_superuser')
 
-    # Filter ở cột bên phải
-    list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups')
-
-    # Tìm kiếm theo các trường này
-    search_fields = ('username', 'email', 'first_name', 'last_name')
-
-    # Sắp xếp mặc định theo username
-    ordering = ('username',)
-
-# Đăng ký CustomUser vào admin
 admin.site.register(CustomUser, CustomUserAdmin)

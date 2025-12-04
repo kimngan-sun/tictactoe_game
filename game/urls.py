@@ -8,5 +8,6 @@ urlpatterns = [
     path('make_move/', views.make_move, name='make_move'),
     path('make_move_hvsh/', views.make_move_hvsh, name='make_move_hvsh'),
     path('create_room/',views.create_room, name='create_room'),
-    path('game/<int:id>/<str:name>/',views.play_onl_game, name='play_onl_game'),
+    path('game/<str:room_code>/<str:name>/',views.play_onl_game, name='play_onl_game'),
+    path("leaderboard/", views.leaderboard_view, name="leaderboard")
 ]

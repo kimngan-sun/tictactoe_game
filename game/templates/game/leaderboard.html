@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bảng Xếp Hạng</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f6f7fb;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 80%;
+            margin: auto;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 8px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background: #333;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+        .rank {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🏆 BẢNG XẾP HẠNG NGƯỜI CHƠI</h1>
+
+<table>
+    <tr>
+        <th>#</th>
+        <th>Người chơi</th>
+        <th>Điểm</th>
+        <th>Thắng</th>
+        <th>Hòa</th>
+        <th>Thua</th>
+        <th>Tổng trận</th>
+    </tr>
+    
+    {% for user in users %}
+    <tr>
+        <td class="rank">{{ forloop.counter }}</td>
+        <td>{{ user.username }}</td>
+        <td>{{ user.score }}</td>
+        <td>{{ user.wins }}</td>
+        <td>{{ user.draws }}</td>
+        <td>{{ user.losses }}</td>
+        <td>{{ user.games_played }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="7">Chưa có người chơi nào!</td>
+    </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>

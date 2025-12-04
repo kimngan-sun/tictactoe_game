@@ -60,10 +60,10 @@
             <!-- Form -->
             <form action="{% url 'create_room' %}" method="post" class="flex flex-col gap-4">
                 {% csrf_token %}
-                <input type="number" name="room-id" placeholder="Nhập số phòng (nếu đã có)"
+                <input type="text" name="room_code" placeholder="Nhập số phòng 6 ký tự (nếu đã có)"
                     class="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
 
-                <input type="text" name="player_name" placeholder="Tên của bạn (mặc định là username nếu trống)"
+                <input type="text" name="player_name" placeholder="Tên của bạn"
                     class="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
 
                 <button id="actionBtn" type="submit"
@@ -81,7 +81,7 @@
     <!-- Script -->
     <script>
         // Đổi nút Tạo / Tham gia
-        const roomInput = document.querySelector("input[name='room-id']");
+        const roomInput = document.querySelector("input[name='room_code']");
         const actionBtn = document.querySelector("button[type='submit']");
 
         roomInput.addEventListener('input', e => {
@@ -92,7 +92,7 @@
             }
         });
 
-        // Mobile menu toggle
+        // Mobile
         const menuBtn = document.getElementById('menu-btn');
         const navItems = document.querySelector('nav .md\\:flex');
 
