@@ -79,18 +79,18 @@ ASGI_APPLICATION = 'tictactoe.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-if ENVIRONMENT == 'development':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+# if ENVIRONMENT == 'development':
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
-else:
-    import dj_database_url
-    DATABASES = {
-        'default' : dj_database_url.parse(env('DATABASE_URL'))
-    }
+}
+# else:
+#     import dj_database_url
+#     DATABASES = {
+#         'default' : dj_database_url.parse(env('DATABASE_URL'))
+#     }
 
 
 # Password validation
