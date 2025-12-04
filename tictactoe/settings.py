@@ -155,7 +155,7 @@ SENDGRID_ECHO_TO_STDOUT = False
 DEFAULT_FROM_EMAIL = "sunnyman2411@gmail.com"
 
 
-SITE_ID = 1
+SITE_ID = 2
 
 #channel-redis
 REDIS_URL = env('REDIS_URL')
