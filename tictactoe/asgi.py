@@ -1,17 +1,20 @@
 import os
-from channels.auth import AuthMiddlewareStack 
-from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
-from game.consumers import *
-from django.urls import path
+from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.auth import AuthMiddlewareStack
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE','tictactoe.settings')
-application = get_asgi_application()
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tictactoe.settings')
+
+# Load Django application
+django_asgi_app = get_asgi_application()
+
+import game.routing
+
 application = ProtocolTypeRouter({
-    'http': get_asgi_application(),
-    'websocket': AuthMiddlewareStack(
-        URLRouter([
-            path("ws/game/<str:code>/", GameConsumer.as_asgi()),
-        ])
+    "http": django_asgi_app,
+    "websocket": AuthMiddlewareStack(
+        URLRouter(
+            game.routing.websocket_urlpatterns
+        )
     ),
 })

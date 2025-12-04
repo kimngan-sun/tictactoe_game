@@ -1,5 +1,4 @@
 
-
 from pathlib import Path
 from environ import Env
 
@@ -17,7 +16,7 @@ SECRET_KEY = env('SECRET_KEY')
 if ENVIRONMENT == 'development':
     DEBUG = True
 else:
-    DEBUG = True
+    DEBUG = False
 
 ALLOWED_HOSTS = ['localhost','127.0.0.1','0.0.0.0','tictactoe-game-tls9.onrender.com']
 
@@ -80,19 +79,18 @@ ASGI_APPLICATION = 'tictactoe.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-# if ENVIRONMENT == 'development':
-DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+if ENVIRONMENT == 'development':
+    DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
         }
+else:
+    import dj_database_url
+    DATABASES = {
+        'default' : dj_database_url.parse(env('DATABASE_URL'))
     }
-
-# else:
-#     import dj_database_url
-#     DATABASES = {
-#         'default' : dj_database_url.parse(env('DATABASE_URL'))
-#     }
 
 
 # Password validation
@@ -160,43 +158,43 @@ DEFAULT_FROM_EMAIL = "sunnyman2411@gmail.com"
 SITE_ID = 1
 
 #channel-redis
-# REDIS_URL = env('REDIS_URL')
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels_redis.core.RedisChannelLayer",
-#         "CONFIG": {
-#             "hosts": [REDIS_URL],
-            
-#         },
-#     }
-# }
-
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django_redis.cache.RedisCache",
-#         "LOCATION": REDIS_URL,
-#         "OPTIONS": {
-#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-#         }
-#     }
-# }
-
+REDIS_URL = env('REDIS_URL')
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": ['redis://default:jLphbMAHyLvZlhBM8jNuWSGLUvtBHS5D@redis-17501.c85.us-east-1-2.ec2.cloud.redislabs.com:17501/0'],
-            "prefix": "channels:",
+            "hosts": [REDIS_URL],
+            
         },
     }
 }
 
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': 'redis://default:jLphbMAHyLvZlhBM8jNuWSGLUvtBHS5D@redis-17501.c85.us-east-1-2.ec2.cloud.redislabs.com:17501/0',
-        'KEY_PREFIX': 'cache:', 
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_URL,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
     }
 }
+
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels_redis.core.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": ['redis://default:jLphbMAHyLvZlhBM8jNuWSGLUvtBHS5D@redis-17501.c85.us-east-1-2.ec2.cloud.redislabs.com:17501/0'],
+#             "prefix": "channels:",
+#         },
+#     }
+# }
+
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+#         'LOCATION': 'redis://default:jLphbMAHyLvZlhBM8jNuWSGLUvtBHS5D@redis-17501.c85.us-east-1-2.ec2.cloud.redislabs.com:17501/0',
+#         'KEY_PREFIX': 'cache:', 
+#     }
+# }
 
 PASSWORD_RESET_TIMEOUT  = 14400
